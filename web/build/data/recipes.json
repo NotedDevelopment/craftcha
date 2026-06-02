@@ -1,0 +1,94 @@
+{
+  "diamond_pickaxe": {
+    "label": "Diamond Pickaxe",
+    "result": "diamond_pickaxe",
+    "resultQty": 1,
+    "shape": [
+      [
+        "diamond",
+        "diamond",
+        "diamond"
+      ],
+      [
+        null,
+        "stick",
+        null
+      ],
+      [
+        null,
+        "stick",
+        null
+      ]
+    ]
+  },
+  "diamond_sword": {
+    "label": "Diamond Sword",
+    "result": "diamond_sword",
+    "resultQty": 1,
+    "shape": [
+      [
+        "diamond"
+      ],
+      [
+        "diamond"
+      ],
+      [
+        "stick"
+      ]
+    ]
+  },
+  "diamond_shovel": {
+    "label": "Diamond Shovel",
+    "result": "diamond_shovel",
+    "resultQty": 1,
+    "shape": [
+      [
+        "diamond"
+      ],
+      [
+        "stick"
+      ],
+      [
+        "stick"
+      ]
+    ]
+  },
+  "stick": {
+    "label": "Stick",
+    "result": "stick",
+    "resultQty": 4,
+    "shape": [
+      [
+        "oak_planks"
+      ],
+      [
+        "oak_planks"
+      ]
+    ]
+  },
+  "crafting_table": {
+    "label": "Crafting Table",
+    "result": "crafting_table",
+    "resultQty": 1,
+    "shape": [
+      [
+        "oak_planks",
+        "oak_planks"
+      ],
+      [
+        "oak_planks",
+        "oak_planks"
+      ]
+    ]
+  },
+  "oak_planks": {
+    "label": "Oak Planks",
+    "result": "oak_planks",
+    "resultQty": 4,
+    "shape": [
+      [
+        "oak_log"
+      ]
+    ]
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "diamond": {
+    "label": "Diamond",
+    "img": "https://minecraft.wiki/images/thumb/Diamond_JE3_BE3.png/96px-Diamond_JE3_BE3.png",
+    "max": 64
+  },
+  "stick": {
+    "label": "Stick",
+    "img": "img/stick.webp",
+    "max": 64
+  },
+  "oak_planks": {
+    "label": "Oak Planks",
+    "img": "img/oakplank.webp",
+    "max": 64
+  },
+  "oak_log": {
+    "label": "Oak Log",
+    "img": "img/oak_log.webp",
+    "max": 64
+  },
+  "diamond_pickaxe": {
+    "label": "Diamond Pickaxe",
+    "img": "https://minecraft.wiki/images/thumb/Diamond_Pickaxe_JE3_BE3.png/96px-Diamond_Pickaxe_JE3_BE3.png",
+    "max": 1
+  },
+  "diamond_sword": {
+    "label": "Diamond Sword",
+    "img": "img/diamond_sword.png",
+    "max": 1
+  },
+  "diamond_shovel": {
+    "label": "Diamond Shovel",
+    "img": "img/diamond_shovel.png",
+    "max": 1
+  },
+  "crafting_table": {
+    "label": "Crafting Table",
+    "img": "img/crafting_table.webp",
+    "max": 64
+  }
+}
