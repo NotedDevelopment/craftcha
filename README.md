@@ -1,5 +1,7 @@
 # craftcha
 
+Demo video: https://youtu.be/Xa-JciN_rhM
+
 A FiveM minigame resource featuring a **Minecraft-style crafting captcha**. Built with React + TypeScript frontend and Lua backend.
 
 > **Status:** Actively maintained for the crafting minigame. The Perfect Circle minigame is soft-abandoned — it works but won't receive further updates or fixes. **Use of the Perfect Circle feature is not recommended;** stick to the crafting captcha.
