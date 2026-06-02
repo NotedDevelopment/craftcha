@@ -159,6 +159,14 @@ const Craftcha: React.FC<{ payload: CraftchaPayload }> = ({ payload }) => {
   const [inv, setInv]         = useState<Item[]>([]);
   const [origInv, setOrigInv] = useState<Item[]>([]);
   const [cursor, setCursor]   = useState<Item>(null);
+
+  // Refs so handleClick can read current state without nested setState calls
+  const craftRef  = React.useRef<Item[]>(craft);
+  const invRef    = React.useRef<Item[]>(inv);
+  const cursorRef = React.useRef<Item>(cursor);
+  craftRef.current  = craft;
+  invRef.current    = inv;
+  cursorRef.current = cursor;
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const [timer, setTimer]     = useState(0);
   const [timeLeft, setTimeLeft] = useState(0);
@@ -265,92 +273,81 @@ const Craftcha: React.FC<{ payload: CraftchaPayload }> = ({ payload }) => {
   const handleClick = useCallback((loc: Location, idx: number, right: boolean) => {
     if (expired) return;
 
-    setCraft(prevCraft => {
-      setInv(prevInv => {
-        setCursor(prevCursor => {
-          const craftArr = prevCraft.map(x => x ? { ...x } : null);
-          const invArr   = prevInv.map(x => x ? { ...x } : null);
-          let cur        = prevCursor ? { ...prevCursor } : null;
+    const craftArr = craftRef.current.map(x => x ? { ...x } : null);
+    const invArr   = invRef.current.map(x => x ? { ...x } : null);
+    let cur        = cursorRef.current ? { ...cursorRef.current } : null;
 
-          const maxFor  = (type: string) => items[type]?.max ?? 64;
-          const getSlot = (l: Location, i: number): Item => l === "craft" ? craftArr[i] : invArr[i];
-          const setSlot = (l: Location, i: number, v: Item) => {
-            if (l === "craft") craftArr[i] = v; else invArr[i] = v;
-          };
+    const maxFor  = (type: string) => items[type]?.max ?? 64;
+    const getSlot = (l: Location, i: number): Item => l === "craft" ? craftArr[i] : invArr[i];
+    const setSlot = (l: Location, i: number, v: Item) => {
+      if (l === "craft") craftArr[i] = v; else invArr[i] = v;
+    };
 
-          if (loc === "result") {
-            const res = checkRecipe(craftArr);
-            if (!res) return cur;
-            const resultType = recipes[res]?.result;
-            const resultQty  = recipes[res]?.resultQty ?? 1;
-            if (!resultType) return cur;
-            if (cur && cur.type !== resultType) return cur;
-            const maxQ = maxFor(resultType);
-            if ((cur?.qty ?? 0) >= maxQ) return cur;
-            const addQty = Math.min(resultQty, maxQ - (cur?.qty ?? 0));
-            cur = cur ? { ...cur, qty: cur.qty + addQty } : { type: resultType, qty: addQty };
-            for (let i = 0; i < 9; i++) {
-              if (craftArr[i]) {
-                craftArr[i]!.qty -= 1;
-                if (craftArr[i]!.qty <= 0) craftArr[i] = null;
-              }
-            }
-            if (res === recipeKey) setHasCrafted(true);
-            setCraft([...craftArr]);
-            setInv([...invArr]);
-            return cur;
-          }
+    if (loc === "result") {
+      const res = checkRecipe(craftArr);
+      if (!res) return;
+      const resultType = recipes[res]?.result;
+      const resultQty  = recipes[res]?.resultQty ?? 1;
+      if (!resultType) return;
+      if (cur && cur.type !== resultType) return;
+      const maxQ = maxFor(resultType);
+      if ((cur?.qty ?? 0) >= maxQ) return;
+      const addQty = Math.min(resultQty, maxQ - (cur?.qty ?? 0));
+      cur = cur ? { ...cur, qty: cur.qty + addQty } : { type: resultType, qty: addQty };
+      for (let i = 0; i < 9; i++) {
+        if (craftArr[i]) {
+          craftArr[i]!.qty -= 1;
+          if (craftArr[i]!.qty <= 0) craftArr[i] = null;
+        }
+      }
+      if (res === recipeKey) setHasCrafted(true);
+    } else {
+      const slot = getSlot(loc, idx);
 
-          const slot = getSlot(loc, idx);
-
-          if (!right) {
-            if (!cur) {
-              if (!slot) return cur;
-              cur = { type: slot.type, qty: slot.qty };
-              setSlot(loc, idx, null);
-            } else {
-              if (!slot) {
-                setSlot(loc, idx, { ...cur }); cur = null;
-              } else if (slot.type === cur.type) {
-                const max = maxFor(slot.type);
-                const add = Math.min(cur.qty, max - slot.qty);
-                slot.qty += add; cur.qty -= add;
-                if (cur.qty <= 0) cur = null;
-                setSlot(loc, idx, slot);
-              } else {
-                const tmp = { type: slot.type, qty: slot.qty };
-                setSlot(loc, idx, { ...cur }); cur = tmp;
-              }
-            }
+      if (!right) {
+        if (!cur) {
+          if (!slot) return;
+          cur = { type: slot.type, qty: slot.qty };
+          setSlot(loc, idx, null);
+        } else {
+          if (!slot) {
+            setSlot(loc, idx, { ...cur }); cur = null;
+          } else if (slot.type === cur.type) {
+            const max = maxFor(slot.type);
+            const add = Math.min(cur.qty, max - slot.qty);
+            slot.qty += add; cur.qty -= add;
+            if (cur.qty <= 0) cur = null;
+            setSlot(loc, idx, slot);
           } else {
-            if (!cur) {
-              if (!slot) return cur;
-              const half = Math.ceil(slot.qty / 2);
-              cur = { type: slot.type, qty: half };
-              const rem = slot.qty - half;
-              setSlot(loc, idx, rem > 0 ? { type: slot.type, qty: rem } : null);
-            } else {
-              if (!slot) {
-                setSlot(loc, idx, { type: cur.type, qty: 1 });
-                cur.qty -= 1; if (cur.qty <= 0) cur = null;
-              } else if (slot.type === cur.type) {
-                const max = maxFor(slot.type);
-                if (slot.qty < max) {
-                  slot.qty += 1; setSlot(loc, idx, slot);
-                  cur.qty -= 1; if (cur.qty <= 0) cur = null;
-                }
-              }
+            const tmp = { type: slot.type, qty: slot.qty };
+            setSlot(loc, idx, { ...cur }); cur = tmp;
+          }
+        }
+      } else {
+        if (!cur) {
+          if (!slot) return;
+          const half = Math.ceil(slot.qty / 2);
+          cur = { type: slot.type, qty: half };
+          const rem = slot.qty - half;
+          setSlot(loc, idx, rem > 0 ? { type: slot.type, qty: rem } : null);
+        } else {
+          if (!slot) {
+            setSlot(loc, idx, { type: cur.type, qty: 1 });
+            cur.qty -= 1; if (cur.qty <= 0) cur = null;
+          } else if (slot.type === cur.type) {
+            const max = maxFor(slot.type);
+            if (slot.qty < max) {
+              slot.qty += 1; setSlot(loc, idx, slot);
+              cur.qty -= 1; if (cur.qty <= 0) cur = null;
             }
           }
+        }
+      }
+    }
 
-          setCraft([...craftArr]);
-          setInv([...invArr]);
-          return cur;
-        });
-        return prevInv;
-      });
-      return prevCraft;
-    });
+    setCraft([...craftArr]);
+    setInv([...invArr]);
+    setCursor(cur);
   }, [items, checkRecipe, expired, recipeKey, recipes]);
 
   const handleReset = () => {
