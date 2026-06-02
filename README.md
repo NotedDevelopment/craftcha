@@ -1,5 +1,7 @@
 # craftcha
 
+Demo video: https://youtu.be/Xa-JciN_rhM
+
 A FiveM minigame resource featuring a **Minecraft-style crafting captcha**. Built with React + TypeScript frontend and Lua backend.
 
 > **Status:** Actively maintained for the crafting minigame. The Perfect Circle minigame is soft-abandoned — it works but won't receive further updates or fixes. **Use of the Perfect Circle feature is not recommended;** stick to the crafting captcha.
@@ -243,33 +245,3 @@ local success = exports.craftcha:openCraftcha('iron_sword', {
 
 ---
 
-## Inventory Integration
-
-Open `client/client.lua` and find the `craftResult` NUI callback. Replace the TODO with your inventory export:
-
-```lua
--- ox_inventory
-exports.ox_inventory:AddItem(source, data.item, 1)
-
--- qb-core
-TriggerServerEvent('QBCore:Server:AddItem', data.item, 1)
-```
-
----
-
-## Debug Mode
-
-```
-setr craftcha-debugMode 1
-```
-
----
-
-## Compatibility
-
-- GTA5
-- RDR3
-
-## Dependencies
-
-None — works standalone with any inventory system.
